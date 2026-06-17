@@ -55,3 +55,22 @@ class PlanView(APIView):
             },
             'eld_logs': logs,
         })
+
+
+class ContactView(APIView):
+    """Simple contact endpoint used by the frontend. Accepts `name` and `message` in
+    POST JSON and returns a simple acknowledgement. In production this can be
+    extended to send an email to admins using Django's email utilities.
+    """
+
+    def post(self, request):
+        data = request.data or {}
+        name = data.get('name')
+        message = data.get('message')
+
+        if not name or not message:
+            return Response({'error': 'name and message are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # TODO: send email to admins if EMAIL settings are configured.
+        return Response({'ok': True})
+
