@@ -11,7 +11,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-change-in-production')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Allow your Render domain and localhost
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# In production, Render will set ALLOWED_HOSTS via environment variable
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com').split(',')
+# Strip whitespace from each host
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -77,6 +80,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# WhiteNoise compression configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Email Configuration (for contact form)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -91,6 +97,14 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:5173,http://localhost:3000'
 ).split(',')
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in CORS_ALLOWED_ORIGINS]
+
+# CSRF Configuration - trust Render domains
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:5173,http://localhost:3000,https://*.onrender.com'
+).split(',')
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS]
 
 # Security settings for production
 if not DEBUG:
@@ -98,6 +112,11 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
+
+    # Tell Django to trust the X-Forwarded-Proto header (needed for Render's reverse proxy)
+    SECURE_PROXY_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    # Content Security Policy
     SECURE_CONTENT_SECURITY_POLICY = {
         'default-src': ("'self'",),
     }
