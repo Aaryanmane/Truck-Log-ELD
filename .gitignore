@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
+.env
+*.egg
+*.egg-info
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+/media
+/staticfiles
+
+# Node
+node_modules/
+npm-debug.log
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Markdown files (documentation only, not deployment code)
+*.md
+!README.md
+
+# Build outputs
+/frontend/dist
+/backend/db.sqlite3
+
