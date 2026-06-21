@@ -33,10 +33,9 @@ def api_root(request):
         }
     })
 
-
 urlpatterns = [
     path('', root_view, name='root'),
-    path('api/', api_root, name='api-root'),
+    # Combine the API routes
     path('api/', include('eld.urls')),
     path('admin/', admin.site.urls),
 ]
