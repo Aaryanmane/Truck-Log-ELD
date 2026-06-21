@@ -1,13 +1,11 @@
-import axios from "axios";
+// Remove the fallback to "/api" if you are not using a proxy
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-// Use environment variable for API base URL, fall back to /api for local development
-const baseURL = import.meta.env.VITE_API_BASE_URL || "/api";
+if (!baseURL) {
+  console.error("VITE_API_BASE_URL is not set! Check your environment variables.");
+}
 
-const api = axios.create({ 
+const api = axios.create({
   baseURL: baseURL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  // ... rest of your code
 });
-
-export default api;
