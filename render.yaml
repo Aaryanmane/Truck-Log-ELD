@@ -1,51 +1,80 @@
+#services:
+#  # Backend Django API
+#  - type: web
+#    name: truck-eld-backend
+#    runtime: python
+#    plan: free
+#    buildCommand: |
+#      pip install --upgrade pip &&
+#      pip install -r requirements.txt &&
+#      python manage.py migrate &&
+#      python manage.py collectstatic --noinput
+#    startCommand: gunicorn truck_eld_project.wsgi:application
+#    envVars:
+#      - key: PYTHON_VERSION
+#        value: 3.11.0
+#      - key: SECRET_KEY
+#        value: change-me-in-production-use-django-secret-key
+#      - key: DEBUG
+#        value: false
+#      - key: ALLOWED_HOSTS
+#        value: truck-eld-backend.onrender.com
+#      - key: CORS_ALLOWED_ORIGINS
+#        value: https://truck-eld-frontend-two.vercel.app/
+#      - key: EMAIL_HOST_USER
+#        fromDatabase:
+#          name: postgres_db
+#          property: username
+#      - key: EMAIL_HOST_PASSWORD
+#        value: your-gmail-app-password
+#
+#  # Frontend React
+#  - type: web
+#    name: truck-eld-frontend
+#    runtime: node
+#    plan: free
+#    buildCommand: |
+#      npm install &&
+#      npm run build
+#    startCommand: npx serve -s dist -l 3000
+#    envVars:
+#      - key: NODE_ENV
+#        value: production
+#      - key: VITE_API_BASE_URL
+#        value: https://truck-eld-backend-m7w3.onrender.com/
+#
+#  # Database (optional: PostgreSQL)
+#  - type: pserv
+#    name: postgres_db
+#    plan: free
+#    ipAllowList: []
+
+
+databases:
+  - name: truck-eld-db
+    plan: free
+
 services:
   # Backend Django API
   - type: web
     name: truck-eld-backend
     runtime: python
-    plan: free
-    buildCommand: |
-      pip install --upgrade pip &&
-      pip install -r requirements.txt &&
-      python manage.py migrate &&
-      python manage.py collectstatic --noinput
-    startCommand: gunicorn truck_eld_project.wsgi:application
+    buildCommand: "./build.sh" # Ensure this script exists and is executable
+    startCommand: "gunicorn truck_eld_project.wsgi:application"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: SECRET_KEY
-        value: change-me-in-production-use-django-secret-key
+        generateValue: true
       - key: DEBUG
-        value: false
+        value: "False"
       - key: ALLOWED_HOSTS
-        value: truck-eld-backend.onrender.com
-      - key: CORS_ALLOWED_ORIGINS
-        value: https://truck-eld-frontend.onrender.com
-      - key: EMAIL_HOST_USER
+        value: "truck-eld-backend.onrender.com"
+      - key: DATABASE_URL # Render automatically populates this
         fromDatabase:
-          name: postgres_db
-          property: username
-      - key: EMAIL_HOST_PASSWORD
-        value: your-gmail-app-password
+          name: truck-eld-db
+          property: connectionString
 
-  # Frontend React
-  - type: web
+  # Frontend React (Static)
+  - type: static
     name: truck-eld-frontend
-    runtime: node
-    plan: free
-    buildCommand: |
-      npm install &&
-      npm run build
-    startCommand: npx serve -s dist -l 3000
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: VITE_API_BASE_URL
-        value: https://truck-eld-backend.onrender.com
-
-  # Database (optional: PostgreSQL)
-  - type: pserv
-    name: postgres_db
-    plan: free
-    ipAllowList: []
-
+    buildCommand: "npm install && npm run build"
+    publishPath: dist # Ensure your vite.config.js outputs to 'dist'
