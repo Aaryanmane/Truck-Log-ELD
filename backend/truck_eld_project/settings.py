@@ -95,14 +95,14 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # CORS Configuration (allow frontend to call backend)
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://localhost:3000'
+    'http://localhost:5173,http://localhost:3000,https://truck-eld-frontend-two.vercel.app'
 ).split(',')
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in CORS_ALLOWED_ORIGINS]
 
 # CSRF Configuration - trust Render domains
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     'CSRF_TRUSTED_ORIGINS',
-    'http://localhost:5173,http://localhost:3000,https://*.onrender.com'
+    'http://localhost:5173,http://localhost:3000,https://truck-eld-frontend-two.vercel.app,https://*.onrender.com'
 ).split(',')
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS]
 

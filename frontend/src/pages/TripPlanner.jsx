@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import MapView from '../components/MapView'
 import ELDLogDrawer, { formatCoord } from '../components/ELDLogDrawer'
+import api from '../api/client'
 
 export default function TripPlanner() {
   const [loading, setLoading] = useState(false)
@@ -68,13 +69,7 @@ export default function TripPlanner() {
         current_cycle_used_hours: parseFloat(form.current_cycle_used_hours || 0),
       }
 
-      const resp = await fetch('/api/plan/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      const data = await resp.json()
-      if (!resp.ok) throw new Error(data.error || 'Request failed')
+      const { data } = await api.post('/api/plan/', body)
 
       const totalDistanceMiles = (data.legs?.total_distance_km || 0) / 1.609
       data.tripMeta = {
